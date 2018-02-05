@@ -1,0 +1,42 @@
+{
+  "name": "aimake-cli-server",
+  "version": "0.0.1",
+  "main": "index.js",
+  "license": "MIT",
+  "bin": {
+    "aimake-cli-server": "./bin/aimake-server"
+  },
+  "scripts": {
+    "test": "npm run test",
+    "eslint": "eslint src --fix",
+    "dev": "babel -w src/ -d lib/",
+    "build": "babel src/ -d lib/"
+  },
+  "dependencies": {
+    "anyproxy": "^4.0.5",
+    "body-parser": "^1.18.2",
+    "chalk": "^2.3.0",
+    "commander": "^2.13.0",
+    "express": "^4.16.2",
+    "express-history-api-fallback": "^2.2.1",
+    "ip": "^1.1.5",
+    "lodash": "^4.17.5",
+    "opn": "^5.2.0",
+    "portscanner": "^2.1.1",
+    "querystring": "^0.2.0",
+    "serve-index": "^1.9.1",
+    "serve-static": "^1.13.1",
+    "webpack": "^3.10.0",
+    "webpack-dev-middleware": "^2.0.4",
+    "webpack-hot-middleware": "^2.21.0",
+    "xweinre": "^1.0.1"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1",
+    "eslint": "^4.17.0",
+    "eslint-config-aimake": "^0.0.1"
+  }
+}

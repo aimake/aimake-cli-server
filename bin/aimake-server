@@ -1,0 +1,25 @@
+#!/usr/bin/env node
+
+const program = require('commander');
+const chalk = require('chalk');
+const server  = require('../index');
+const pkg  = require('../package.json');
+
+program
+  .version(pkg.version)
+  .usage('<command> [options]')
+  .option('-m, --mock <dir>', chalk.green('Mock directory, default to `mock`'), 'mock')
+  .option('-p, --port <port>', chalk.green('Server port, default to `3000`'), 3000)
+  .option('-o, --open', chalk.green('Open url in default browser'))
+  .option('-s, --https', chalk.green('Run https server'))
+  .option('    --mockapi', chalk.green('Mock data using api maps'))
+  .parse(process.argv);
+
+const options = {
+  port: program.port,
+  open: program.open,
+  mock: program.mock,
+  https: program.https,
+};
+
+server(options);

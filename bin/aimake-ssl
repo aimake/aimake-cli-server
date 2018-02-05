@@ -1,0 +1,86 @@
+#!/usr/bin/env node
+
+const fs = require('fs');
+const mkdir = fs.mkdirSync;
+const rm = fs.unlinkSync;
+const exists = fs.existsSync;
+const exec = require('child_process').exec;
+const program = require('commander');
+const log = require('debug')('xtools:certs');
+
+program
+  .option('-k --keyfile [serverKey]', 'Specifies the name of the generated key file (default: ssl/server.key)', 'ssl/server.key')
+  .option('-c --certfile [serverCert]', 'Specifies the name of the generated certificate file (default: ssl/server.crt)', 'ssl/server.crt')
+  .option('-s --subj [subj]', 'Specifices subject field data', '"/C=US/ST=Denial/L=Springfield/O=Dis/CN=www.example.com"')
+  .option('-d --days [days]', 'Specifies the number of days to make a certificate valid for (default: 365)', '365')
+  .parse(process.argv);
+
+ensureDir(program.keyfile);
+ensureDir(program.certfile);
+
+const cmdGenRsa = 'openssl genrsa 1024 > ' + program.keyfile;
+const cmdReq = 'openssl req -new -subj ' + program.subj + ' -key ' + program.keyfile + ' -out csr.pem';
+const cmdX509 = 'openssl x509 -req -days ' + program.days + ' -in csr.pem -signkey ' + program.keyfile + ' -out ' + program.certfile;
+
+exec(cmdGenRsa, function (err, stdout, stderr) {
+  log('exec: %s', cmdGenRsa);
+  if (stdout.length) console.log(stdout);
+  if (err != null) {
+    console.log('Exception: ' + err);
+    process.exit(1);
+    return;
+  }
+
+  exec(cmdReq, function (err, stdout, stderr) {
+    log('exec: %s', cmdReq);
+    if (stdout.length) console.log(stdout);
+    if (err != null) {
+      console.log(err);
+      process.exit(1);
+      return;
+    }
+
+    exec(cmdX509, function (err, stdout, stderr) {
+      log('exec: %s', cmdX509);
+      rm('csr.pem');
+      if (stdout.length) console.log(stdout);
+      if (err != null) {
+        console.log(err);
+        process.exit(1);
+        return;
+      }
+      process.exit(0);
+    });
+  });
+});
+
+/**
+ * Ensures the directories specified in path exists
+ * @param path (String) is the path of the file
+ */
+function ensureDir (path) {
+  const dirs = getSubpaths(path);
+
+  for (let d in dirs) {
+    const name = dirs[d];
+    log('ensuring %s', name);
+    if (!exists(name)) mkdir(name);
+  }
+
+  function getSubpaths (path) {
+    const splitted = path.split('/');
+    const arr = [];
+    if (splitted.length > 1) {
+      for (let i = 0; i < splitted.length - 1; i++) {
+        let dir = '';
+        for (let j = 0; j <= i; j++) {
+          dir += splitted[j] + '/';
+        }
+
+        arr.push(dir);
+      }
+    }
+
+    return arr;
+  }
+}
