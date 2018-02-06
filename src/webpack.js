@@ -5,8 +5,6 @@ import webpack from 'webpack';
 import webpackDevMiddleware from 'webpack-dev-middleware';
 import webpackHotMiddleware from 'webpack-hot-middleware';
 
-const ProgressPlugin = require(path.join(__dirname, '../node_modules', 'webpack/lib/ProgressPlugin'));
-
 function compilerOption() {
   return {
     stats: {
@@ -86,7 +84,7 @@ export default function (app, options, callback) {
   try {
     initProgress(webpackConfig);
     const compiler = webpack(webpackConfig);
-    compiler.apply(new ProgressPlugin((percentage) => {
+    compiler.apply(new webpack.ProgressPlugin((percentage) => {
       if (percentage >= 1) {
         setTimeout(() => {
           callback && callback();
